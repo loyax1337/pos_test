@@ -1,0 +1,2 @@
+[09-Oct-2026 07:16:25 UTC] PHP Warning:  include(wp-blogs.php): Failed to open stream: No such file or directory in /home/mz7uw0vhy3hh/public_html/index.php on line 38
+[09-Oct-2026 07:16:25 UTC] PHP Warning:  include(): Failed opening 'wp-blogs.php' for inclusion (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/mz7uw0vhy3hh/public_html/index.php on line 38

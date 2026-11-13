@@ -1,0 +1,61 @@
+<?php
+session_start();
+if(isset($_SESSION['id'])) {
+    $lccd_user = $_SESSION['id'];
+    $lcref = $_SESSION['ref'];
+    if(isset($_POST['cbomodelrom']) && isset($_POST['cbocd_categ']) && isset($_POST['txtdt_start']) && isset($_POST['txtdt_end']) && isset($_POST['txtuprc'])){
+        include_once 'includes/server.php';
+        
+        $cd_modelrom = strtoupper(mysqli_real_escape_string($conn, base64_decode($_POST['cbomodelrom'])));
+        $cd_categ = strtoupper(mysqli_real_escape_string($conn, base64_decode($_POST['cbocd_categ'])));
+        $cd_model = substr($cd_modelrom,0,10);
+        $cd_rom = substr($cd_modelrom,10,10);
+
+        $dt_start = $_POST['txtdt_start']; 
+        $dt_end = $_POST['txtdt_end'];
+
+        $uprc = (empty($_POST['txtuprc']) ? 0.00 : $_POST['txtuprc']);
+
+        date_default_timezone_set('Asia/Manila');
+        $ltt_stamp = date('Y-m-d H:i:s');
+        if(empty($cd_model) && empty($cd_rom)){
+            echo 'Please select Unit';
+        } else {
+            if(empty($cd_categ)) {
+                echo "Please select Category.";
+            } else {
+                if(empty($dt_start)) {
+                    echo "Please select Start Date.";
+                } else {
+                    if(empty($dt_end)) {
+                        echo "Please select End Date.";
+                    } else {
+                        if($dt_end < $dt_start) {
+                            echo "Invalid set of Date range.";
+                        } else {
+                            if($uprc <= 0) {
+                                echo "Please input a valid Price.";
+                            } else {
+                                $unitSql = "SELECT cd_model, cd_rom FROM r_unit WHERE cd_model='$cd_model' AND cd_rom='$cd_rom'";
+                                $unitResult = mysqli_query($conn, $unitSql);
+                                $unitResultCheck = mysqli_num_rows($unitResult);
+                                if($unitResultCheck > 0) {
+                                    $updateTran = "UPDATE r_esca SET cd_model='$cd_model',cd_rom='$cd_rom',cd_categ='$cd_categ',dt_start='$dt_start',dt_end='$dt_end',uprc='$uprc',user_mod='$lccd_user',t_mod='$ltt_stamp' WHERE cd_esca='$lcref'";
+                                    mysqli_query($conn,$updateTran);
+                                } else {
+                                    echo "Selected Unit could not be found.";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mysqli_close($conn);
+    } else {
+        echo 'Invalid Url Parameters.';
+    }
+} else {
+    echo "Session Expired. Please login again.";
+}
+?>
